@@ -1,4 +1,4 @@
-interface Book {
+export interface Book {
     id: number;
     title: string;
     description: string;
@@ -6,7 +6,3 @@ interface Book {
     authorLastName: string;
     year: number;
 }
-
-export {
-    Book
-};

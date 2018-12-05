@@ -1,3 +1,3 @@
-# Node-API
+# <%= dasherize(name) %>
 
-Fill out your services README!
+Fill out your services README herek!

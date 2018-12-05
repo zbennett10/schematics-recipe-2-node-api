@@ -14,7 +14,7 @@ type Router = (app: Application) => void;
 
 export const routeApp: Router = (app: Application): void => {
     app.get('/', async (_: Request, res: Response) => {
-        const booksJson = await readFile(booksSourcePath, { encoding: 'utf-8' });
+        const booksJson     = await readFile(booksSourcePath, { encoding: 'utf-8' });
         const books: Book[] = JSON.parse(booksJson);
 
         res.status(200).send(
@@ -23,7 +23,7 @@ export const routeApp: Router = (app: Application): void => {
     });
 
     app.get('/books', async (_: Request, res: Response) => {
-        const booksJson = await readFile(booksSourcePath, { encoding: 'utf-8' });
+        const booksJson     = await readFile(booksSourcePath, { encoding: 'utf-8' });
         const books: Book[] = JSON.parse(booksJson);
 
         res.status(200).json(books);
@@ -43,6 +43,7 @@ export const routeApp: Router = (app: Application): void => {
 
     app.post('/book', async (req: Request, res: Response) => {
         const book: Book = req.body;
+
         if (!book) {
             res.status(400).json({error: 'Invalid POST request'});
         } else {
@@ -57,35 +58,33 @@ export const routeApp: Router = (app: Application): void => {
     });
 
     app.put('/book/:id', async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id }        = req.params;
+        const booksJson     = await readFile(booksSourcePath, { encoding: 'utf-8' });
+        const books: Book[] = JSON.parse(booksJson);
+        const updateIdx     = books.findIndex(book => book.id === Number(id));
 
-        if (!id) {
-            res.status(400).json({error: 'ID route parameter is needed (value from 1-100'});
-        } else {
-            const booksJson = await readFile(booksSourcePath, { encoding: 'utf-8' });
-            const books: Book[] = JSON.parse(booksJson);
-
-            const updateIdx = books.findIndex(book => book.id === id);
-            const updatedBook = { ...books[id], ...req.body  };
+        if (updateIdx > -1) {
+            const updatedBook = { ...books[updateIdx], ...req.body  };
             books.splice(updateIdx, 1, updatedBook);
             await writeFile(booksSourcePath, JSON.stringify(books));
             res.status(200).json({ id });
+        } else {
+            res.json({ error: `Book with id: ${id} not found.`});
         }
     });
 
     app.delete('/book/:id', async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const { id }        = req.params;
+        const booksJson     = await readFile(booksSourcePath, { encoding: 'utf-8' });
+        const books: Book[] = JSON.parse(booksJson);
+        const deletionIdx   = books.findIndex(book => book.id === Number(id));
 
-        if (!id) {
-            res.status(400).json({error: 'ID route parameter is needed (value from 1-100'});
-        } else {
-            const booksJson = await readFile(booksSourcePath, { encoding: 'utf-8' });
-            const books: Book[] = JSON.parse(booksJson);
-
-            const deletionIdx = books.findIndex(book => book.id === Number(id));
+        if (deletionIdx > -1) {
             books.splice(deletionIdx, 1);
             await writeFile(booksSourcePath, JSON.stringify(books));
             res.status(200).json({ id });
+        } else {
+            res.json({ error: `Book with id: ${id} not found.`});
         }
     });
 };
