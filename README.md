@@ -1,3 +1,3 @@
 # <%= dasherize(name) %>
 
-Fill out your services README herek!
+Fill out your services README here!
